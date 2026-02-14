@@ -1,0 +1,23 @@
+unit_id,agency_name,city,area,unit_type,rent_monthly_gbp,deposit_gbp,available_from,min_contract_months,gym,bills_included,cctv,furnished,walk_mins_to_uni,transit_mins_to_uni,university_nearby
+U001,CityLets,London,Shoreditch,Studio,1200,1200,2025-09-01,12,yes,yes,yes,yes,15,10,UCL
+U002,CityLets,London,Shoreditch,1Bed,1500,1500,2025-09-01,12,yes,yes,yes,yes,15,10,UCL
+U003,HomeStay,London,Camden,1Bed,1350,1350,2025-08-15,6,no,yes,yes,yes,20,12,UCL
+U004,HomeStay,London,Camden,2Bed,1700,1700,2025-08-15,6,no,yes,yes,yes,20,12,UCL
+U005,PrimePads,London,Canary Wharf,Studio,1100,1100,2025-09-15,12,yes,no,yes,yes,30,20,Queen Mary
+U006,PrimePads,London,Canary Wharf,1Bed,1400,1400,2025-09-15,12,yes,no,yes,yes,30,20,Queen Mary
+U007,UniNest,Manchester,City Centre,Studio,750,750,2025-09-01,12,yes,yes,yes,yes,10,5,University of Manchester
+U008,UniNest,Manchester,City Centre,1Bed,900,900,2025-09-01,12,yes,yes,yes,yes,10,5,University of Manchester
+U009,UniNest,Manchester,City Centre,2Bed,1100,1100,2025-09-01,6,yes,yes,yes,yes,10,5,University of Manchester
+U010,StudentCrib,Manchester,Fallowfield,Studio,600,600,2025-08-20,12,no,yes,no,yes,25,15,University of Manchester
+U011,StudentCrib,Manchester,Fallowfield,1Bed,750,750,2025-08-20,12,no,yes,no,yes,25,15,University of Manchester
+U012,StudentCrib,Birmingham,Selly Oak,Studio,550,550,2025-09-01,12,no,yes,yes,yes,10,5,University of Birmingham
+U013,StudentCrib,Birmingham,Selly Oak,1Bed,700,700,2025-09-01,12,no,yes,yes,yes,10,5,University of Birmingham
+U014,LuxLiving,Birmingham,City Centre,1Bed,850,850,2025-08-01,6,yes,yes,yes,yes,20,10,University of Birmingham
+U015,LuxLiving,Birmingham,City Centre,2Bed,1050,1050,2025-08-01,6,yes,yes,yes,yes,20,10,University of Birmingham
+U016,CityLets,London,King's Cross,Studio,1300,1300,2025-09-01,12,yes,yes,yes,yes,10,5,UCL
+U017,CityLets,London,King's Cross,1Bed,1600,1600,2025-09-01,12,yes,yes,yes,yes,10,5,UCL
+U018,HomeStay,Edinburgh,Old Town,Studio,800,800,2025-09-01,12,no,no,yes,yes,15,8,University of Edinburgh
+U019,HomeStay,Edinburgh,Old Town,1Bed,950,950,2025-09-01,12,no,no,yes,yes,15,8,University of Edinburgh
+U020,HomeStay,Edinburgh,Newington,1Bed,850,850,2025-08-15,6,no,yes,yes,yes,10,5,University of Edinburgh
+Shared001,BudgetStay,London,Stratford,Shared,500,500,2025-09-01,6,no,no,no,no,40,25,Queen Mary
+Shared002,BudgetStay,Manchester,Rusholme,Shared,350,350,2025-09-01,6,no,no,no,no,20,10,University of Manchester
