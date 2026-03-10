@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=PhD Scholarship Scraper
+Comment=Scrape FindAPhD.com and export to Excel
+Exec=bash -c "cd /home/user/chevening-vip-form && ./start.sh"
+Icon=applications-internet
+Terminal=true
+Categories=Utility;
