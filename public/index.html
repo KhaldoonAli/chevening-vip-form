@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PhD Scholarship Scraper – FindAPhD.com</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue:    #1a3c5e;
+      --blue2:   #2a5f8f;
+      --accent:  #e8a020;
+      --green:   #28a745;
+      --light:   #f0f4f9;
+      --border:  #d0dce8;
+      --text:    #1e2d3d;
+      --muted:   #6b7f91;
+      --radius:  10px;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--light);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: linear-gradient(135deg, var(--blue) 0%, var(--blue2) 100%);
+      color: #fff;
+      padding: 28px 40px 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.25);
+    }
+    header h1 { font-size: 1.85rem; font-weight: 700; letter-spacing: -.5px; }
+    header p  { margin-top: 5px; opacity: .8; font-size: .95rem; }
+    .badge {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      font-size: .7rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 99px;
+      vertical-align: middle;
+      margin-left: 8px;
+      letter-spacing: .5px;
+    }
+
+    /* ── MAIN ── */
+    main { max-width: 1200px; margin: 32px auto; padding: 0 20px; }
+
+    /* ── SEARCH CARD ── */
+    .search-card {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: 0 2px 12px rgba(0,0,0,.08);
+      padding: 28px 32px;
+      margin-bottom: 28px;
+      border: 1px solid var(--border);
+    }
+    .search-card h2 { font-size: 1.1rem; margin-bottom: 18px; color: var(--blue); }
+
+    .search-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field label { font-size: .8rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; }
+
+    input[type="text"], select {
+      border: 1.5px solid var(--border);
+      border-radius: 7px;
+      padding: 9px 14px;
+      font-size: .95rem;
+      color: var(--text);
+      outline: none;
+      transition: border-color .2s;
+    }
+    input[type="text"] { width: 340px; }
+    select { width: 140px; }
+    input[type="text"]:focus, select:focus { border-color: var(--blue2); }
+
+    /* Quick-search chips */
+    .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+    .chip {
+      background: var(--light);
+      border: 1.5px solid var(--border);
+      border-radius: 99px;
+      padding: 4px 14px;
+      font-size: .82rem;
+      cursor: pointer;
+      transition: all .15s;
+      color: var(--blue);
+      font-weight: 500;
+    }
+    .chip:hover { background: var(--blue); color: #fff; border-color: var(--blue); }
+
+    /* Buttons */
+    .btn {
+      padding: 10px 24px;
+      border: none;
+      border-radius: 7px;
+      font-size: .95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .btn-primary { background: var(--blue); color: #fff; }
+    .btn-primary:hover { background: var(--blue2); }
+    .btn-primary:disabled { background: #9bb2c8; cursor: not-allowed; }
+
+    .btn-success { background: var(--green); color: #fff; }
+    .btn-success:hover { background: #218838; }
+    .btn-success:disabled { background: #9bd5ad; cursor: not-allowed; }
+
+    /* ── PROGRESS ── */
+    #progress-section { display: none; margin-bottom: 28px; }
+    .progress-card {
+      background: #fff;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 10px rgba(0,0,0,.07);
+      padding: 22px 28px;
+    }
+    .progress-label { font-weight: 600; margin-bottom: 10px; color: var(--blue); }
+    .progress-bar-wrap { background: var(--light); border-radius: 99px; height: 10px; overflow: hidden; }
+    .progress-bar { height: 100%; background: linear-gradient(90deg, var(--blue) 0%, var(--accent) 100%); border-radius: 99px; transition: width .4s; width: 0%; }
+    .progress-status { margin-top: 8px; font-size: .85rem; color: var(--muted); }
+
+    /* ── RESULTS ── */
+    #results-section { display: none; }
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .results-title { font-size: 1.15rem; font-weight: 700; color: var(--blue); }
+    .count-badge {
+      background: var(--blue);
+      color: #fff;
+      border-radius: 99px;
+      padding: 3px 12px;
+      font-size: .85rem;
+      font-weight: 600;
+    }
+
+    /* Filter bar */
+    .filter-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .filter-bar input {
+      flex: 1;
+      min-width: 200px;
+      border: 1.5px solid var(--border);
+      border-radius: 7px;
+      padding: 8px 13px;
+      font-size: .9rem;
+      outline: none;
+    }
+    .filter-bar input:focus { border-color: var(--blue2); }
+
+    /* Table */
+    .table-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+    thead th {
+      background: var(--blue);
+      color: #fff;
+      padding: 11px 14px;
+      text-align: left;
+      font-size: .78rem;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      white-space: nowrap;
+    }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background .1s; }
+    tbody tr:hover { background: #eaf1fb; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody td { padding: 10px 14px; vertical-align: top; }
+    tbody td:first-child { font-weight: 600; color: var(--muted); font-size: .8rem; }
+
+    .td-title { max-width: 280px; font-weight: 600; color: var(--blue); line-height: 1.4; }
+    .td-uni   { max-width: 180px; }
+    .td-desc  { max-width: 260px; color: var(--muted); font-size: .83rem; line-height: 1.45;
+                overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
+    .td-link a { color: var(--blue2); text-decoration: none; font-weight: 600; white-space: nowrap; }
+    .td-link a:hover { text-decoration: underline; }
+
+    .tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: .75rem;
+      font-weight: 600;
+    }
+    .tag-funded  { background: #d4edda; color: #155724; }
+    .tag-partial { background: #fff3cd; color: #856404; }
+    .tag-none    { background: #f8d7da; color: #721c24; }
+
+    /* Empty state */
+    .empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+    .empty svg { opacity: .3; margin-bottom: 12px; }
+    .empty p { font-size: 1rem; }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      background: var(--blue);
+      color: #fff;
+      padding: 12px 22px;
+      border-radius: 8px;
+      font-size: .9rem;
+      font-weight: 500;
+      box-shadow: 0 4px 16px rgba(0,0,0,.2);
+      opacity: 0;
+      transform: translateY(12px);
+      transition: all .25s;
+      pointer-events: none;
+      z-index: 999;
+    }
+    #toast.show { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 640px) {
+      header { padding: 20px; }
+      main { margin: 16px auto; }
+      .search-card { padding: 18px; }
+      input[type="text"] { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>PhD Scholarship Scraper <span class="badge">LIVE</span></h1>
+  <p>Search &amp; export available PhD positions from <strong>FindAPhD.com</strong> to Excel</p>
+</header>
+
+<main>
+  <!-- Search Card -->
+  <div class="search-card">
+    <h2>Search PhD Positions</h2>
+    <div class="search-row">
+      <div class="field">
+        <label>Search Keyword</label>
+        <input type="text" id="keyword" value="architecture" placeholder="e.g. architecture, urban design…" />
+      </div>
+      <div class="field">
+        <label>Max Pages</label>
+        <select id="maxPages">
+          <option value="2">2 pages (~40)</option>
+          <option value="5" selected>5 pages (~100)</option>
+          <option value="8">8 pages (~160)</option>
+          <option value="10">10 pages (~200)</option>
+        </select>
+      </div>
+      <div class="field" style="justify-content:flex-end">
+        <button class="btn btn-primary" id="scrapeBtn" onclick="startScrape()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Scrape Now
+        </button>
+      </div>
+    </div>
+
+    <!-- Quick chips -->
+    <div class="chips">
+      <span class="chip" onclick="setKeyword('architecture')">Architecture</span>
+      <span class="chip" onclick="setKeyword('urban design')">Urban Design</span>
+      <span class="chip" onclick="setKeyword('landscape architecture')">Landscape Architecture</span>
+      <span class="chip" onclick="setKeyword('sustainable design')">Sustainable Design</span>
+      <span class="chip" onclick="setKeyword('computational design')">Computational Design</span>
+      <span class="chip" onclick="setKeyword('heritage conservation')">Heritage Conservation</span>
+      <span class="chip" onclick="setKeyword('interior architecture')">Interior Architecture</span>
+    </div>
+  </div>
+
+  <!-- Progress -->
+  <div id="progress-section">
+    <div class="progress-card">
+      <div class="progress-label" id="progress-label">Scraping FindAPhD.com…</div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+      <div class="progress-status" id="progress-status">Starting…</div>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div id="results-section">
+    <div class="results-header">
+      <div>
+        <span class="results-title">Results</span>
+        <span class="count-badge" id="count-badge">0</span>
+      </div>
+      <button class="btn btn-success" id="downloadBtn" onclick="downloadExcel()" disabled>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download Excel
+      </button>
+    </div>
+
+    <!-- Filter -->
+    <div class="filter-bar">
+      <input type="text" id="filter-input" placeholder="Filter results by title, university, funding…" oninput="filterTable()" />
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap">
+      <table id="results-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Title</th>
+            <th>University</th>
+            <th>Department</th>
+            <th>Funding</th>
+            <th>Deadline</th>
+            <th>Location</th>
+            <th>Description</th>
+            <th>Link</th>
+          </tr>
+        </thead>
+        <tbody id="results-body">
+          <tr><td colspan="9"><div class="empty"><p>Run a search to see results here.</p></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<div id="toast"></div>
+
+<script>
+  let currentSessionId = null;
+  let allResults = [];
+
+  function setKeyword(kw) {
+    document.getElementById('keyword').value = kw;
+  }
+
+  function showToast(msg, duration = 3000) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), duration);
+  }
+
+  function fundingTag(text) {
+    if (!text) return '<span class="tag tag-none">Unknown</span>';
+    const l = text.toLowerCase();
+    if (l.includes('fully funded') || l.includes('full funding') || l.includes('stipend')) {
+      return `<span class="tag tag-funded">${escHtml(text)}</span>`;
+    }
+    if (l.includes('partial') || l.includes('fee') || l.includes('scholarship')) {
+      return `<span class="tag tag-partial">${escHtml(text)}</span>`;
+    }
+    return `<span class="tag tag-none">${escHtml(text)}</span>`;
+  }
+
+  function escHtml(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function renderTable(data) {
+    const tbody = document.getElementById('results-body');
+    if (!data.length) {
+      tbody.innerHTML = '<tr><td colspan="9"><div class="empty"><p>No results found. Try a different keyword.</p></div></td></tr>';
+      return;
+    }
+    tbody.innerHTML = data.map((r, i) => `
+      <tr>
+        <td>${i + 1}</td>
+        <td class="td-title">${escHtml(r.title)}</td>
+        <td class="td-uni">${escHtml(r.university)}</td>
+        <td>${escHtml(r.department)}</td>
+        <td>${fundingTag(r.funding)}</td>
+        <td>${escHtml(r.deadline) || '—'}</td>
+        <td>${escHtml(r.location) || '—'}</td>
+        <td class="td-desc">${escHtml(r.description)}</td>
+        <td class="td-link">${r.link ? `<a href="${escHtml(r.link)}" target="_blank" rel="noopener">View →</a>` : '—'}</td>
+      </tr>
+    `).join('');
+  }
+
+  function filterTable() {
+    const q = document.getElementById('filter-input').value.toLowerCase();
+    if (!q) { renderTable(allResults); return; }
+    const filtered = allResults.filter(r =>
+      (r.title       || '').toLowerCase().includes(q) ||
+      (r.university  || '').toLowerCase().includes(q) ||
+      (r.funding     || '').toLowerCase().includes(q) ||
+      (r.location    || '').toLowerCase().includes(q) ||
+      (r.department  || '').toLowerCase().includes(q)
+    );
+    renderTable(filtered);
+  }
+
+  async function startScrape() {
+    const keyword  = document.getElementById('keyword').value.trim() || 'architecture';
+    const maxPages = parseInt(document.getElementById('maxPages').value) || 5;
+    const btn      = document.getElementById('scrapeBtn');
+
+    btn.disabled = true;
+    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="animation:spin 1s linear infinite"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0"/></svg> Scraping…';
+
+    document.getElementById('progress-section').style.display = 'block';
+    document.getElementById('results-section').style.display  = 'none';
+    document.getElementById('progress-bar').style.width = '5%';
+    document.getElementById('progress-status').textContent = 'Connecting to FindAPhD.com…';
+    document.getElementById('progress-label').textContent   = `Searching for "${keyword}"…`;
+
+    // Start scrape
+    let sessionId;
+    try {
+      const res = await fetch('/api/scrape', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ keyword, maxPages }),
+      });
+      const data = await res.json();
+      sessionId = data.sessionId;
+      currentSessionId = sessionId;
+    } catch (err) {
+      showToast('Failed to start scrape: ' + err.message);
+      btn.disabled = false;
+      btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Scrape Now';
+      return;
+    }
+
+    // Listen for progress via SSE
+    const evtSource = new EventSource(`/api/scrape/progress/${sessionId}`);
+
+    evtSource.onmessage = (e) => {
+      const msg = JSON.parse(e.data);
+
+      if (msg.status === 'scraping') {
+        const pct = msg.totalPages > 1 ? Math.round((msg.page / msg.totalPages) * 90) + 5 : 50;
+        document.getElementById('progress-bar').style.width = pct + '%';
+        document.getElementById('progress-status').textContent =
+          `Page ${msg.page} of ${msg.totalPages} — ${msg.found} results so far…`;
+      }
+
+      if (msg.status === 'done') {
+        evtSource.close();
+        document.getElementById('progress-bar').style.width = '100%';
+        document.getElementById('progress-status').textContent = `Done! Found ${msg.found} results.`;
+        loadResults(sessionId);
+      }
+
+      if (msg.status === 'error') {
+        evtSource.close();
+        document.getElementById('progress-status').textContent = 'Error: ' + msg.message;
+        showToast('Scrape error: ' + msg.message, 5000);
+        btn.disabled = false;
+        btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Scrape Now';
+      }
+    };
+
+    evtSource.onerror = () => {
+      evtSource.close();
+      // Try polling fallback
+      pollResults(sessionId, btn);
+    };
+  }
+
+  async function pollResults(sessionId, btn) {
+    for (let i = 0; i < 60; i++) {
+      await new Promise(r => setTimeout(r, 3000));
+      try {
+        const res = await fetch(`/api/results/${sessionId}`);
+        const data = await res.json();
+        if (data.status === 'done' || data.results) {
+          loadResults(sessionId);
+          return;
+        }
+      } catch (_) {}
+    }
+    showToast('Timed out waiting for results.', 5000);
+    btn.disabled = false;
+  }
+
+  async function loadResults(sessionId) {
+    try {
+      const res  = await fetch(`/api/results/${sessionId}`);
+      const data = await res.json();
+      allResults = data.results || [];
+
+      document.getElementById('count-badge').textContent = allResults.length;
+      document.getElementById('results-section').style.display = 'block';
+      document.getElementById('downloadBtn').disabled = allResults.length === 0;
+
+      renderTable(allResults);
+      showToast(`Found ${allResults.length} PhD positions!`);
+
+      const btn = document.getElementById('scrapeBtn');
+      btn.disabled = false;
+      btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Scrape Now';
+    } catch (err) {
+      showToast('Failed to load results: ' + err.message);
+    }
+  }
+
+  function downloadExcel() {
+    if (!currentSessionId) return;
+    window.location.href = `/api/download/${currentSessionId}`;
+    showToast('Downloading Excel file…');
+  }
+
+  // CSS spin keyframe
+  const style = document.createElement('style');
+  style.textContent = '@keyframes spin { to { transform: rotate(360deg); } }';
+  document.head.appendChild(style);
+</script>
+
+</body>
+</html>
